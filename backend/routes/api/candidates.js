@@ -19,6 +19,7 @@ const storage = new CloudinaryStorage({
     allowed_formats: ['pdf'],
     resource_type: 'raw', // Change from 'auto' to 'raw' for non-image files like PDFs
     format: 'pdf', // Explicitly set format to pdf
+    access_mode: 'public', // Ensure the file is publicly accessible
   },
 });
 
