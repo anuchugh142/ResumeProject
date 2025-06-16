@@ -37,7 +37,7 @@ app.use('/api/candidates', require('./routes/api/candidates'));
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('Something broke!');
+  res.status(500).json({ msg: 'Server Error', error: err.message || 'Something broke!' });
 });
 
 // For local development

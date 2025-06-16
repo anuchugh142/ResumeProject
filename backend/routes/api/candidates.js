@@ -33,7 +33,7 @@ router.get('/', async (req, res) => {
     res.json(candidates);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ msg: 'Server Error' });
   }
 });
 
@@ -82,7 +82,7 @@ router.get('/:id', async (req, res) => {
     if (err.kind === 'ObjectId') {
          return res.status(404).json({ msg: 'Candidate not found' });
     }
-    res.status(500).send('Server Error');
+    res.status(500).json({ msg: 'Server Error' });
   }
 });
 
