@@ -17,7 +17,8 @@ const storage = new CloudinaryStorage({
   params: {
     folder: 'resumes', // Cloudinary folder name
     allowed_formats: ['pdf'],
-    resource_type: 'auto', // for non-image files
+    resource_type: 'raw', // Change from 'auto' to 'raw' for non-image files like PDFs
+    format: 'pdf', // Explicitly set format to pdf
   },
 });
 
