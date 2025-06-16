@@ -88,7 +88,7 @@ function CandidateDetails() {
                 {candidate?.resume && (
                   <button
                     className="btn btn-outline"
-                    onClick={() => window.open(`${config.API_URL}/${candidate.resume}`, '_blank')}
+                    onClick={() => window.open(candidate.resume, '_blank')}
                   >
                     View Resume
                   </button>
