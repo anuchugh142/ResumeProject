@@ -38,6 +38,7 @@ function CandidateForm() {
     try {
       const response = await fetch(`${config.API_URL}/api/candidates`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },

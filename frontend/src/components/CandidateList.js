@@ -9,7 +9,12 @@ function CandidateList() {
   useEffect(() => {
     const fetchCandidates = async () => {
       try {
-        const response = await fetch(`${config.API_URL}/api/candidates`);
+        const response = await fetch(`${config.API_URL}/api/candidates`, {
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch candidates');
         }
