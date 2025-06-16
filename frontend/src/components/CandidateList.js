@@ -10,7 +10,7 @@ function CandidateList() {
     const fetchCandidates = async () => {
       try {
         const response = await fetch(`${config.API_URL}/api/candidates`, {
-          credentials: 'include',
+ //         credentials: 'include',
           headers: {
             'Content-Type': 'application/json'
           }

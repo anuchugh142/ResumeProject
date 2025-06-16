@@ -40,26 +40,29 @@ router.get('/', async (req, res) => {
 // @route   POST api/candidates
 // @desc    Add a new candidate
 // @access  Public (for now)
-router.post('/', upload.single('resume'), async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { name, email, phone } = req.body;
-    const resumePath = req.file ? req.file.path : null;
+    
+    // Validate required fields
+    if (!name || !email) {
+      return res.status(400).json({ msg: 'Name and email are required' });
+    }
 
     const newCandidate = new Candidate({
       name,
       email,
-      phone,
-      resume: resumePath
+      phone
     });
 
     const candidate = await newCandidate.save();
     res.json(candidate);
   } catch (err) {
-    console.error(err.message);
+    console.error('Error saving candidate:', err);
     if (err.code === 11000) {
       return res.status(400).json({ msg: 'Email already exists' });
     }
-    res.status(500).send('Server Error');
+    res.status(500).json({ msg: 'Server Error', error: err.message });
   }
 });
 

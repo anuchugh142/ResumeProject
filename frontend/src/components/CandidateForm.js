@@ -38,18 +38,27 @@ function CandidateForm() {
     try {
       const response = await fetch(`${config.API_URL}/api/candidates`, {
         method: 'POST',
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone
+        }),
       });
       
-      if (response.ok) {
-        navigate('/');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.msg || 'Failed to submit form');
       }
+
+      const data = await response.json();
+      console.log('Success:', data);
+      navigate('/');
     } catch (error) {
       console.error('Error submitting form:', error);
+      setError(error.message || 'Failed to submit form. Please try again.');
     }
   };
 
