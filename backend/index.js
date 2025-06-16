@@ -33,6 +33,7 @@ app.get('/', (req, res) => {
 
 // Use Routes
 app.use('/api/candidates', require('./routes/api/candidates'));
+app.use('/api/feedback', require('./routes/api/feedback'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
