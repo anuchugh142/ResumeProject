@@ -24,6 +24,12 @@ const upload = multer({
   }
 });
 
+// Add this at the top of the file
+router.use((req, res, next) => {
+  console.log(`[${req.method}] ${req.originalUrl} - Body:`, req.body);
+  next();
+});
+
 // @route   GET api/candidates
 // @desc    Get all candidates
 // @access  Public (for now)
@@ -101,6 +107,7 @@ router.post('/:id/feedback', async (req, res) => {
 
     res.json(candidate.feedback);
   } catch (err) {
+    console.error('Error in feedback route:', err);
     res.status(500).json({ msg: 'Server Error' });
   }
 });
