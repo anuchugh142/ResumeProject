@@ -66,7 +66,7 @@ router.post('/', upload.single('resume'), async (req, res) => {
     const candidate = await newCandidate.save();
     res.json(candidate);
   } catch (err) {
-    console.error('Error saving candidate:', err);
+    console.error('Error in POST /api/candidates:', err);
     if (err.code === 11000) {
       return res.status(400).json({ msg: 'Email already exists' });
     }
@@ -93,21 +93,26 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Log all POST requests
+router.use((req, res, next) => {
+  if (req.method === 'POST') {
+    console.log(`[POST] ${req.originalUrl} - Body:`, req.body);
+  }
+  next();
+});
+
 // Add feedback to a candidate
 router.post('/:id/feedback', async (req, res) => {
   try {
     const { comment } = req.body;
     if (!comment) return res.status(400).json({ msg: 'Feedback comment required' });
-
     const candidate = await Candidate.findById(req.params.id);
     if (!candidate) return res.status(404).json({ msg: 'Candidate not found' });
-
     candidate.feedback.push({ comment });
     await candidate.save();
-
     res.json(candidate.feedback);
   } catch (err) {
-    console.error('Error in feedback route:', err);
+    console.error('Error in POST /api/candidates/:id/feedback:', err);
     res.status(500).json({ msg: 'Server Error' });
   }
 });
