@@ -88,7 +88,10 @@ function CandidateDetails() {
                 {candidate?.resume && (
                   <button
                     className="btn btn-outline"
-                    onClick={() => window.open(candidate.resume, '_blank')}
+                    onClick={() => {
+                      console.log('Attempting to open resume URL:', candidate.resume);
+                      window.open(candidate.resume, '_blank');
+                    }}
                   >
                     View Resume
                   </button>
