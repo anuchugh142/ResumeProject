@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import config from '../config';
 
 function CandidateDetails() {
@@ -9,19 +10,13 @@ function CandidateDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [feedback, setFeedback] = useState('');
-  const [rating, setRating] = useState(5);
   const [feedbackList, setFeedbackList] = useState([]);
-  const [feedbackError, setFeedbackError] = useState('');
 
   useEffect(() => {
     const fetchCandidate = async () => {
       try {
-        const response = await fetch(`${config.API_URL}/api/candidates/${id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch candidate details');
-        }
-        const data = await response.json();
-        setCandidate(data);
+        const res = await axios.get(`${config.API_URL}/api/candidates/${id}`);
+        setCandidate(res.data);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching candidate details:', err);
@@ -30,70 +25,18 @@ function CandidateDetails() {
       }
     };
 
-    const fetchFeedback = async () => {
-      try {
-        const response = await fetch(`${config.API_URL}/api/feedback/${id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch feedback');
-        }
-        const data = await response.json();
-        setFeedbackList(data);
-      } catch (err) {
-        console.error('Error fetching feedback:', err);
-      }
-    };
-
     fetchCandidate();
-    fetchFeedback();
   }, [id]);
 
-  const handleFeedbackSubmit = async (e) => {
+  const handleFeedbackSubmit = (e) => {
     e.preventDefault();
-    setFeedbackError('');
-
-    if (!feedback.trim()) {
-      setFeedbackError('Please enter feedback');
-      return;
-    }
-
-    try {
-      const response = await fetch(`${config.API_URL}/api/feedback/${id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ comment: feedback, rating }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.msg || 'Failed to submit feedback');
-      }
-
-      const newFeedback = await response.json();
-      setFeedbackList([newFeedback, ...feedbackList]);
+    if (feedback.trim()) {
+      const newFeedback = {
+        id: feedbackList.length + 1,
+        comment: feedback,
+      };
+      setFeedbackList([...feedbackList, newFeedback]);
       setFeedback('');
-      setRating(5);
-    } catch (err) {
-      console.error('Error submitting feedback:', err);
-      setFeedbackError(err.message || 'Failed to submit feedback');
-    }
-  };
-
-  const handleDeleteFeedback = async (feedbackId) => {
-    try {
-      const response = await fetch(`${config.API_URL}/api/feedback/${feedbackId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete feedback');
-      }
-
-      setFeedbackList(feedbackList.filter(f => f._id !== feedbackId));
-    } catch (err) {
-      console.error('Error deleting feedback:', err);
-      setFeedbackError('Failed to delete feedback');
     }
   };
 
@@ -159,66 +102,26 @@ function CandidateDetails() {
           <div className="feedback-card">
             <h2>Feedback</h2>
             <form onSubmit={handleFeedbackSubmit} className="feedback-form">
-              <div className="form-group">
-                <label htmlFor="rating">Rating</label>
-                <select
-                  id="rating"
-                  value={rating}
-                  onChange={(e) => setRating(Number(e.target.value))}
-                  className="form-control"
-                >
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <option key={num} value={num}>
-                      {num} {num === 1 ? 'Star' : 'Stars'}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label htmlFor="feedback">Comment</label>
-                <textarea
-                  id="feedback"
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  className="form-control"
-                  rows="4"
-                  placeholder="Enter your feedback..."
-                />
-              </div>
-              {feedbackError && (
-                <div className="alert alert-error">{feedbackError}</div>
-              )}
-              <button type="submit" className="btn btn-primary">
+              <textarea
+                placeholder="Add your feedback..."
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+              />
+              <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
                 Submit Feedback
               </button>
             </form>
 
+            <div className="divider" />
+
             <div className="feedback-list">
-              <h3>Previous Feedback</h3>
-              {feedbackList.length === 0 ? (
-                <p>No feedback yet</p>
-              ) : (
-                feedbackList.map((item) => (
-                  <div key={item._id} className="feedback-item">
-                    <div className="feedback-header">
-                      <div className="rating">
-                        {'★'.repeat(item.rating)}
-                        {'☆'.repeat(5 - item.rating)}
-                      </div>
-                      <button
-                        className="btn btn-sm btn-danger"
-                        onClick={() => handleDeleteFeedback(item._id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                    <p className="feedback-comment">{item.comment}</p>
-                    <small className="feedback-date">
-                      {new Date(item.date).toLocaleDateString()}
-                    </small>
+              {feedbackList.map((item) => (
+                <div key={item.id} className="feedback-item">
+                  <div className="feedback-author">
                   </div>
-                ))
-              )}
+                  <p className="feedback-comment">{item.comment}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
