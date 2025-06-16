@@ -17,7 +17,6 @@ function CandidateDetails() {
       try {
         const res = await axios.get(`${config.API_URL}/api/candidates/${id}`);
         setCandidate(res.data);
-        setFeedbackList(res.data.feedback || []);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching candidate details:', err);
@@ -29,26 +28,15 @@ function CandidateDetails() {
     fetchCandidate();
   }, [id]);
 
-  const handleFeedbackSubmit = async (e) => {
+  const handleFeedbackSubmit = (e) => {
     e.preventDefault();
     if (feedback.trim()) {
-      try {
-        const res = await fetch(`${config.API_URL}/api/candidates/${id}/feedback`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ comment: feedback }),
-        });
-        if (res.ok) {
-          const updatedFeedback = await res.json();
-          setFeedbackList(updatedFeedback);
-          setFeedback('');
-        } else {
-          const errorData = await res.json();
-          setError(errorData.msg || 'Failed to submit feedback');
-        }
-      } catch (err) {
-        setError('Failed to submit feedback');
-      }
+      const newFeedback = {
+        id: feedbackList.length + 1,
+        comment: feedback,
+      };
+      setFeedbackList([...feedbackList, newFeedback]);
+      setFeedback('');
     }
   };
 

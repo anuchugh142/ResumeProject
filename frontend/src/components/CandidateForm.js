@@ -49,15 +49,8 @@ function CandidateForm() {
       });
       
       if (!response.ok) {
-        let errorMsg = 'Failed to submit form';
-        try {
-          const errorData = await response.json();
-          errorMsg = errorData.msg || errorMsg;
-        } catch (e) {
-          // response was not JSON
-        }
-        setError(errorMsg);
-        return;
+        const errorData = await response.json();
+        throw new Error(errorData.msg || 'Failed to submit form');
       }
 
       const data = await response.json();
