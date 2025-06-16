@@ -40,9 +40,10 @@ router.get('/', async (req, res) => {
 // @route   POST api/candidates
 // @desc    Add a new candidate
 // @access  Public (for now)
-router.post('/', async (req, res) => {
+router.post('/', upload.single('resume'), async (req, res) => {
   try {
     const { name, email, phone } = req.body;
+    const resumePath = req.file ? req.file.path : null;
     
     // Validate required fields
     if (!name || !email) {
@@ -52,7 +53,8 @@ router.post('/', async (req, res) => {
     const newCandidate = new Candidate({
       name,
       email,
-      phone
+      phone,
+      resume: resumePath
     });
 
     const candidate = await newCandidate.save();
