@@ -87,5 +87,22 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Add feedback to a candidate
+router.post('/:id/feedback', async (req, res) => {
+  try {
+    const { comment } = req.body;
+    if (!comment) return res.status(400).json({ msg: 'Feedback comment required' });
+
+    const candidate = await Candidate.findById(req.params.id);
+    if (!candidate) return res.status(404).json({ msg: 'Candidate not found' });
+
+    candidate.feedback.push({ comment });
+    await candidate.save();
+
+    res.json(candidate.feedback);
+  } catch (err) {
+    res.status(500).json({ msg: 'Server Error', error: err.message });
+  }
+});
 
 module.exports = router;
