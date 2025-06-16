@@ -32,8 +32,8 @@ router.get('/', async (req, res) => {
     const candidates = await Candidate.find().sort({ date: -1 }); // Get candidates, sorted by date
     res.json(candidates);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    console.error('Error fetching candidates:', err);
+    res.status(500).json({ msg: 'Server Error' });
   }
 });
 
@@ -64,7 +64,7 @@ router.post('/', upload.single('resume'), async (req, res) => {
     if (err.code === 11000) {
       return res.status(400).json({ msg: 'Email already exists' });
     }
-    res.status(500).json({ msg: 'Server Error', error: err.message });
+    res.status(500).json({ msg: 'Server Error' });
   }
 });
 
@@ -83,7 +83,7 @@ router.get('/:id', async (req, res) => {
     if (err.kind === 'ObjectId') {
          return res.status(404).json({ msg: 'Candidate not found' });
     }
-    res.status(500).send('Server Error');
+    res.status(500).json({ msg: 'Server Error' });
   }
 });
 
@@ -101,7 +101,7 @@ router.post('/:id/feedback', async (req, res) => {
 
     res.json(candidate.feedback);
   } catch (err) {
-    res.status(500).json({ msg: 'Server Error', error: err.message });
+    res.status(500).json({ msg: 'Server Error' });
   }
 });
 
