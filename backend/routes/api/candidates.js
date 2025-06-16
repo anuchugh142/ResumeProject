@@ -2,27 +2,20 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const Candidate = require('../../models/Candidate'); // Import the Candidate model
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 // Configure multer for file upload
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'resumes', // Cloudinary folder name
+    allowed_formats: ['pdf'],
+    resource_type: 'raw', // for non-image files
   },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
 });
 
-const upload = multer({
-  storage: storage,
-  fileFilter: function (req, file, cb) {
-    if (file.mimetype === 'application/pdf') {
-      cb(null, true);
-    } else {
-      cb(new Error('Only PDF files are allowed!'), false);
-    }
-  }
-});
+const upload = multer({ storage: storage });
 
 // @route   GET api/candidates
 // @desc    Get all candidates
@@ -43,7 +36,7 @@ router.get('/', async (req, res) => {
 router.post('/', upload.single('resume'), async (req, res) => {
   try {
     const { name, email, phone } = req.body;
-    const resumePath = req.file ? req.file.path : null;
+    const resumeUrl = req.file ? req.file.path : null; // Cloudinary returns the URL in .path
 
     if (!name || !email) {
       return res.status(400).json({ msg: 'Name and email are required' });
@@ -53,7 +46,7 @@ router.post('/', upload.single('resume'), async (req, res) => {
       name,
       email,
       phone,
-      resume: resumePath
+      resume: resumeUrl,
     });
 
     const candidate = await newCandidate.save();
@@ -86,5 +79,10 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 module.exports = router;
