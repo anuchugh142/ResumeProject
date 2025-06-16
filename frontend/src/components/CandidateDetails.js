@@ -11,6 +11,7 @@ function CandidateDetails() {
   const [error, setError] = useState(null);
   const [feedback, setFeedback] = useState('');
   const [feedbackList, setFeedbackList] = useState([]);
+  const [hasOpenedResume, setHasOpenedResume] = useState(false); // prevent resume from reopening on re-renders
 
   useEffect(() => {
     const fetchCandidate = async () => {
@@ -27,6 +28,14 @@ function CandidateDetails() {
 
     fetchCandidate();
   }, [id]);
+
+  // Automatically open resume when loaded
+  useEffect(() => {
+    if (candidate?.resume && !hasOpenedResume) {
+      window.open(candidate.resume, '_blank');
+      setHasOpenedResume(true);
+    }
+  }, [candidate, hasOpenedResume]);
 
   const handleFeedbackSubmit = (e) => {
     e.preventDefault();
@@ -54,10 +63,7 @@ function CandidateDetails() {
 
   return (
     <div className="details-container">
-      <button
-        className="back-button"
-        onClick={() => navigate('/')}
-      >
+      <button className="back-button" onClick={() => navigate('/')}>
         ← Back to List
       </button>
 
@@ -86,15 +92,7 @@ function CandidateDetails() {
               <h2>Resume</h2>
               <div className="resume-section">
                 {candidate?.resume && (
-                  <button
-                    className="btn btn-outline"
-                    onClick={() => {
-                      console.log('Attempting to open resume URL:', candidate.resume);
-                      window.open(candidate.resume, '_blank');
-                    }}
-                  >
-                    View Resume
-                  </button>
+                  <p>Resume opened in new tab.</p> // Optional note
                 )}
               </div>
             </div>
@@ -120,8 +118,6 @@ function CandidateDetails() {
             <div className="feedback-list">
               {feedbackList.map((item) => (
                 <div key={item.id} className="feedback-item">
-                  <div className="feedback-author">
-                  </div>
                   <p className="feedback-comment">{item.comment}</p>
                 </div>
               ))}
@@ -133,4 +129,4 @@ function CandidateDetails() {
   );
 }
 
-export default CandidateDetails; 
+export default CandidateDetails;
