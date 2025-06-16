@@ -5,12 +5,6 @@ const Candidate = require('../../models/Candidate'); // Import the Candidate mod
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
 // Configure multer for file upload
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
@@ -83,6 +77,12 @@ router.get('/:id', async (req, res) => {
     }
     res.status(500).json({ msg: 'Server Error' });
   }
+});
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 module.exports = router;
