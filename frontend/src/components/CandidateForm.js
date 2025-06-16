@@ -36,16 +36,17 @@ function CandidateForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('phone', formData.phone);
+      if (formData.resume) {
+        formDataToSend.append('resume', formData.resume);
+      }
+
       const response = await fetch(`${config.API_URL}/api/candidates`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone
-        }),
+        body: formDataToSend
       });
       
       if (!response.ok) {
