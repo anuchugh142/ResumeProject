@@ -19,7 +19,6 @@ const storage = new CloudinaryStorage({
     allowed_formats: ['pdf'],
     resource_type: 'raw', // Change from 'auto' to 'raw' for non-image files like PDFs
     format: 'pdf', // Explicitly set format to pdf
-    access_mode: 'public', // Ensure the file is publicly accessible
   },
 });
 
@@ -44,7 +43,17 @@ router.get('/', async (req, res) => {
 router.post('/', upload.single('resume'), async (req, res) => {
   try {
     const { name, email, phone } = req.body;
-    const resumeUrl = req.file ? req.file.path : null; // Cloudinary returns the URL in .path
+    let resumeUrl = null;
+
+    if (req.file) {
+      // Use Cloudinary SDK to generate the URL with 'inline' flag
+      resumeUrl = cloudinary.url(req.file.public_id, {
+        flags: 'inline',
+        resource_type: 'raw',
+        format: 'pdf',
+      });
+      console.log('Generated resume URL with inline flag:', resumeUrl);
+    }
 
     if (!name || !email) {
       return res.status(400).json({ msg: 'Name and email are required' });
