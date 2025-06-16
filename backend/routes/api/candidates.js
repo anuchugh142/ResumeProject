@@ -86,4 +86,36 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// @route   POST api/candidates/:id/feedback
+// @desc    Add feedback to a candidate
+// @access  Public (for now)
+router.post('/:id/feedback', async (req, res) => {
+  try {
+    const candidate = await Candidate.findById(req.params.id);
+
+    if (!candidate) {
+      return res.status(404).json({ msg: 'Candidate not found' });
+    }
+
+    const { comment } = req.body;
+
+    if (!comment) {
+      return res.status(400).json({ msg: 'Feedback comment is required' });
+    }
+
+    const newFeedback = {
+      comment,
+    };
+
+    candidate.feedback.unshift(newFeedback); // Add new feedback to the beginning of the array
+
+    await candidate.save();
+
+    res.json(candidate.feedback);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+});
+
 module.exports = router;

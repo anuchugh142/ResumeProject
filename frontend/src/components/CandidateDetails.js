@@ -10,7 +10,6 @@ function CandidateDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [feedback, setFeedback] = useState('');
-  const [feedbackList, setFeedbackList] = useState([]);
 
   useEffect(() => {
     const fetchCandidate = async () => {
@@ -28,15 +27,20 @@ function CandidateDetails() {
     fetchCandidate();
   }, [id]);
 
-  const handleFeedbackSubmit = (e) => {
+  const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
     if (feedback.trim()) {
-      const newFeedback = {
-        id: feedbackList.length + 1,
-        comment: feedback,
-      };
-      setFeedbackList([...feedbackList, newFeedback]);
-      setFeedback('');
+      try {
+        // Send feedback to the backend
+        await axios.post(`${config.API_URL}/api/candidates/${id}/feedback`, { comment: feedback });
+        // After successful submission, refresh candidate data to show new feedback
+        const res = await axios.get(`${config.API_URL}/api/candidates/${id}`);
+        setCandidate(res.data);
+        setFeedback(''); // Clear the feedback input
+      } catch (err) {
+        console.error('Error submitting feedback:', err);
+        alert('Failed to submit feedback.');
+      }
     }
   };
 
@@ -118,8 +122,8 @@ function CandidateDetails() {
             <div className="divider" />
 
             <div className="feedback-list">
-              {feedbackList.map((item) => (
-                <div key={item.id} className="feedback-item">
+              {candidate?.feedback && candidate.feedback.map((item) => (
+                <div key={item._id} className="feedback-item">
                   <div className="feedback-author">
                   </div>
                   <p className="feedback-comment">{item.comment}</p>

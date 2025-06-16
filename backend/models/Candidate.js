@@ -17,6 +17,18 @@ const CandidateSchema = new mongoose.Schema({
     // You might store the file path or use a different strategy for files
     type: String,
   },
+  feedback: [
+    {
+      comment: {
+        type: String,
+        required: true,
+      },
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
   // Add other fields as needed (e.g., status, notes)
   date: {
     type: Date,
