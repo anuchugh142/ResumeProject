@@ -43,7 +43,7 @@ router.get('/', async (req, res) => {
 router.post('/', upload.single('resume'), async (req, res) => {
   try {
     const { name, email, phone } = req.body;
-    const resumeUrl = req.file ? (req.file.path.endsWith('.pdf') ? req.file.path : req.file.path + '.pdf') : null; // Cloudinary returns the URL in .path
+    const resumeUrl = req.file ? req.file.path : null; // Cloudinary returns the URL in .path
 
     if (!name || !email) {
       return res.status(400).json({ msg: 'Name and email are required' });
