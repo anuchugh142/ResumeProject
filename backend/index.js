@@ -21,7 +21,8 @@ app.use('/uploads', express.static(path.join(__dirname, process.env.UPLOAD_PATH 
 // Database connection 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  bufferCommands: false
 })
 .then(() => console.log('MongoDB Connected'))
 .catch(err => console.log('MongoDB Connection Error:', err));
