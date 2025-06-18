@@ -20,7 +20,11 @@ const storage = new CloudinaryStorage({
     resource_type: 'raw', // Change from 'auto' to 'raw' for non-image files like PDFs
     format: 'pdf', // Explicitly set format to pdf
     use_filename: true,
-    unique_filename: false,
+    public_id: (req, file) => {
+      const name = file.originalname.replace(/\.[^/.]+$/, "");
+      const ext = file.originalname.split('.').pop();
+      return `${name}_${Date.now()}.${ext}`;
+    }
   },
 });
 
